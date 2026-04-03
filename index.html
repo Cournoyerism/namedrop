@@ -442,7 +442,7 @@ function vote(wi){
   document.getElementById('h2h-result').textContent=winner.name+' wins this round!';
   setTimeout(()=>document.getElementById('h2h-result').textContent='',2000);
   // Send both votes to Apps Script
-  if(APPS_SCRIPT_URL!=='https://script.google.com/macros/s/AKfycbzVCnrEu2zvpEy9GYCiTqPukUSWTg7aLk0srehJIHdReDjZ5wltX5mt8EqTldNjDm3H/exec'){
+  if(APPS_SCRIPT_URL!=='YOUR_APPS_SCRIPT_URL_HERE'){
     const send=(name,gender,result,opponent)=>
       fetch(APPS_SCRIPT_URL,{method:'POST',body:JSON.stringify({name,gender,result,opponent})}).catch(()=>{});
     send(winner.name,h2hGender,'Win',loser.name);
