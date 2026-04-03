@@ -385,30 +385,25 @@ function tick(){
 tick(); setInterval(tick,1000);
 
 // ── LOAD NAMES ──
-function loadNames(){
-  if(APPS_SCRIPT_URL==='https://script.google.com/macros/s/AKfycbzVCnrEu2zvpEy9GYCiTqPukUSWTg7aLk0srehJIHdReDjZ5wltX5mt8EqTldNjDm3H/exec'){
-    // Demo data while not set up
-    allNames=[
-      {name:'Oliver', gender:'Boy', source:'Submitted',wins:5,losses:2},
-      {name:'Liam',   gender:'Boy', source:'Submitted',wins:4,losses:3},
-      {name:'Noah',   gender:'Boy', source:'Daily Drop',wins:6,losses:1},
-      {name:'James',  gender:'Boy', source:'Daily Drop',wins:2,losses:5},
-      {name:'Henry',  gender:'Boy', source:'Submitted',wins:3,losses:4},
-      {name:'Sophia', gender:'Girl',source:'Submitted',wins:7,losses:0},
-      {name:'Olivia', gender:'Girl',source:'Daily Drop',wins:5,losses:2},
-      {name:'Emma',   gender:'Girl',source:'Submitted',wins:4,losses:3},
-      {name:'Ava',    gender:'Girl',source:'Daily Drop',wins:2,losses:5},
-      {name:'Charlotte',gender:'Girl',source:'Submitted',wins:6,losses:1},
-    ];
-    renderAll(); return;
-  }
-  fetch(APPS_SCRIPT_URL+'?action=getNames')
-    .then(r=>r.json())
-    .then(data=>{ allNames=data; renderAll(); })
-    .catch(()=>{ allNames=[]; renderAll(); });
-}
-
 function renderAll(){ renderH2H(); renderLeaderboard(); renderNames(); }
+
+function loadNames(){
+  fetch(APPS_SCRIPT_URL + '?action=getNames&t=' + Date.now())
+    .then(r => r.json())
+    .then(data => { allNames = data; renderAll(); })
+    .catch(() => {
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', APPS_SCRIPT_URL + '?action=getNames', true);
+      xhr.withCredentials = false;
+      xhr.onreadystatechange = function() {
+        if(xhr.readyState === 4) {
+          try { allNames = JSON.parse(xhr.responseText); renderAll(); }
+          catch(e) { renderAll(); }
+        }
+      };
+      xhr.send();
+    });
+}
 
 // ── H2H ──
 function pool(g){ return allNames.filter(n=>n.gender===g); }
